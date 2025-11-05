@@ -2406,15 +2406,109 @@
     <script src="https://unpkg.com/typed.js@2.0.15/dist/typed.umd.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Show loader initially and hide main content
             const loader = document.getElementById('loader');
             const mainContent = document.getElementById('main-content');
 
-            // Simulate loading delay (e.g., 2 seconds)
-            setTimeout(() => {
+            const showLoader = () => {
+                loader.classList.remove('hidden');
+                mainContent.classList.remove('loaded');
+            };
+            const hideLoader = () => {
                 loader.classList.add('hidden');
                 mainContent.classList.add('loaded');
-            }, 2000);
+            };
+
+            // Basic heuristic for "slow" network
+            function isSlowNetwork() {
+                // Definitely slow if offline
+                if (!navigator.onLine) return true;
+
+                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                if (conn) {
+                    const effective = (conn.effectiveType || '').toLowerCase();
+                    const downlink = Number(conn.downlink || Infinity);
+                    const rtt = Number(conn.rtt || 0);
+
+                    // Treat 2g / slow-2g / very small downlink / high rtt as poor
+                    if (effective === 'slow-2g' || effective === '2g') return true;
+                    if (!Number.isNaN(downlink) && downlink > 0 && downlink < 0.5) return true;
+                    if (!Number.isNaN(rtt) && rtt > 300) return true;
+                }
+
+                return false;
+            }
+
+            // Periodic probe to detect recovery (only used when loader is shown)
+            let probeInterval = null;
+            async function probeNetwork() {
+                // Try a lightweight HEAD request to a CDN resource already used on the page.
+                // Abort if it takes too long. If it succeeds, assume network recovered.
+                try {
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 4000);
+                    const res = await fetch('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css', {
+                        method: 'HEAD',
+                        cache: 'no-store',
+                        mode: 'cors',
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeout);
+                    if (res && res.ok) {
+                        hideLoader();
+                        stopProbing();
+                    }
+                } catch (e) {
+                    // still slow/offline — keep loader visible
+                }
+            }
+
+            function startProbing() {
+                if (probeInterval) return;
+                probeInterval = setInterval(probeNetwork, 3000);
+                // also do an immediate probe
+                probeNetwork();
+            }
+
+            function stopProbing() {
+                if (!probeInterval) return;
+                clearInterval(probeInterval);
+                probeInterval = null;
+            }
+
+            // Evaluate network and decide whether to show loader
+            function evaluateNetworkAndAct() {
+                if (isSlowNetwork()) {
+                    showLoader();
+                    startProbing();
+                } else {
+                    hideLoader();
+                    stopProbing();
+                }
+            }
+
+            // Initial decision: do NOT force a 2s loader when connection looks fine.
+            evaluateNetworkAndAct();
+
+            // React to connection changes / online-offline events
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection && typeof connection.addEventListener === 'function') {
+                connection.addEventListener('change', evaluateNetworkAndAct);
+            } else {
+                window.addEventListener('online', evaluateNetworkAndAct);
+                window.addEventListener('offline', evaluateNetworkAndAct);
+            }
+
+            // Optional graceful fallback: if page is stuck showing loader for a long time (e.g. >30s),
+            // reveal content so user can still interact, while keeping loader state for network checks.
+            const failSafeTimeout = setTimeout(() => {
+                if (!mainContent.classList.contains('loaded')) {
+                    // reveal content but keep loader hidden so it doesn't block UI permanently
+                    mainContent.classList.add('loaded');
+                    loader.classList.add('hidden');
+                    // continue probing in background
+                    startProbing();
+                }
+            }, 30000);
 
             // Initialize Typed.js
             new Typed('.text', {
@@ -2530,6 +2624,7 @@
 
 
 </html>
+
 
 
 
