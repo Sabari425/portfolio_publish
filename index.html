@@ -5,9 +5,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Sabari425/Portfolio/refs/heads/main/sp-initial-logo-blue-grey-linked-circle-blured-1000-modified.png">
-<!--     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Sabari425/Portfolio/refs/heads/main/sp-initial-logo-blue-grey-linked-circle-blured-modified.png"> --> -->
-<!--     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Sabari425/Portfolio/refs/heads/main/sp-initial-logo-blue-grey-linked-circle-modified.png"> -->
     <title>Sabari Poornesh S - Portfolio</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -2269,12 +2266,13 @@
                 <h1 class="sub-title">Latest <span>Projects</span></h1>
                 <div class="portfolio-content">
                     <div class="row fade-in">
-                        <img src="https://raw.githubusercontent.com/Sabari425/Portfolio/refs/heads/main/Server-rafiki-Database-management.png"
+                        <img src="https://raw.githubusercontent.com/Sabari425/Portfolio/refs/heads/main/Programming-amico.png"
                             alt="UI/UX Project">
                         <div style="margin-top: 120px;" class="layer">
                             <h5>Database Management (MySQL)</h5>
                             <p>I design, build, and manage databases to store, organize, and retrieve data efficiently.
-                                From setting up relational databases like MySQL to integrating them with software
+                                From setting up relational databases like MySQL to integrating them with software or
+                                robotics
                                 applications, I ensure data flows smoothly and securely.</p>
                             <a
                                 href="https://www.geeksforgeeks.org/introduction-of-dbms-database-management-system-set-1/"><i
@@ -2337,7 +2335,7 @@
                         <div class="layer">
                             <h5>Robot Kinematics with Python (Forward and Inverse Kinematics)</h5>
                             <p>I implement robot kinematics algorithms in Python for simulating and controlling robotic arms. This includes forward and inverse kinematics, visualization, and integration with robotics platforms.</p>
-                            <a href="https://github.com/Sabari425/Robot-Kinematics-Python-.git"><i
+                            <a href="https://www.geeksforgeeks.org/robot-kinematics-using-python/"><i
                                     class='bx bx-link-external' style="color: var(--secondary-color);"></i></a>
                         </div>
                     </div>
@@ -2410,80 +2408,278 @@
             const mainContent = document.getElementById('main-content');
 
             const showLoader = () => {
-                loader.classList.remove('hidden');
-                mainContent.classList.remove('loaded');
+            loader.classList.remove('hidden');
+            mainContent.classList.remove('loaded');
+            // if truly offline, show creative "plug removed" alert
+            if (!navigator.onLine) offlineAlert.style.display = 'flex';
+            else offlineAlert.style.display = 'none';
             };
             const hideLoader = () => {
-                loader.classList.add('hidden');
-                mainContent.classList.add('loaded');
+            loader.classList.add('hidden');
+            mainContent.classList.add('loaded');
+            offlineAlert.style.display = 'none';
             };
+
+            // --- Creative "plug removed" offline alert (not using builtin alert) ---
+            // create alert element + styles dynamically so it lives on a separate loader "page"
+            const offlineAlert = document.createElement('div');
+            offlineAlert.className = 'offline-alert';
+            offlineAlert.innerHTML = `
+            <div class="offline-card" role="status" aria-live="polite">
+                <div class="error-icon">
+                    <svg viewBox="0 0 24 24" width="80" height="80">
+                        <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 7v6M12 15v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>Connection Lost</h3>
+                <p>Unable to connect to the network. Please check your internet connection.</p>
+                <div class="offline-actions">
+                    <button class="offline-retry" type="button">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path d="M2 12c0 5.523 4.477 10 10 10s10-4.477 10-10-4.477-10-10-10c-3.79 0-7.17 2.105-8.82 5.5" 
+                                  stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M2 5v7h7" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Retry Connection
+                    </button>
+                    <button class="offline-close" type="button">Dismiss</button>
+                </div>
+                <div class="offline-hint">You can still browse cached content while offline</div>
+            </div>
+            `;
+            document.body.appendChild(offlineAlert);
+
+            const offlineStyle = document.createElement('style');
+            offlineStyle.textContent = `
+            .offline-alert {
+                position: fixed;
+                inset: 0;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(8px);
+                z-index: 2000;
+                padding: 20px;
+            }
+
+            .offline-card {
+                width: min(420px, 90%);
+                background: var(--box-bg-color, #1a1a1a);
+                color: var(--text-color, #fff);
+                border-radius: 16px;
+                padding: 32px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                align-items: center;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                animation: slideIn 0.3s ease-out;
+            }
+
+            .error-icon {
+                color: var(--primary-color, #00ddeb);
+                animation: pulse 2s infinite;
+            }
+
+            .offline-card h3 {
+                font-size: 24px;
+                font-weight: 600;
+                color: var(--heading-color, #fff);
+                margin: 0;
+            }
+
+            .offline-card p {
+                font-size: 15px;
+                line-height: 1.5;
+                color: var(--text-color, #ddd);
+                margin: 0;
+                opacity: 0.9;
+            }
+
+            .offline-actions {
+                display: flex;
+                gap: 12px;
+                margin-top: 8px;
+            }
+
+            .offline-retry {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 24px;
+                background: var(--primary-color, #00ddeb);
+                color: var(--secondary-color, #0a2a4a);
+                border: none;
+                border-radius: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .offline-retry:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 221, 235, 0.3);
+            }
+
+            .offline-retry svg {
+                animation: spin 2s linear infinite;
+            }
+
+            .offline-close {
+                padding: 12px 24px;
+                background: transparent;
+                color: var(--text-color, #fff);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .offline-close:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .offline-hint {
+                font-size: 13px;
+                color: var(--text-color, #fff);
+                opacity: 0.6;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateY(20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes pulse {
+                0% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(0.95); opacity: 0.7; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+
+            @media (max-width: 480px) {
+                .offline-card {
+                    padding: 24px;
+                    gap: 12px;
+                }
+                .offline-actions {
+                    flex-direction: column;
+                    width: 100%;
+                }
+                .offline-retry, .offline-close {
+                    width: 100%;
+                }
+            }
+            `;
+            document.head.appendChild(offlineStyle);
+
+            // Retry / Close controls
+            const retryBtn = offlineAlert.querySelector('.offline-retry');
+            const closeBtn = offlineAlert.querySelector('.offline-close');
+            retryBtn.addEventListener('click', async () => {
+            retryBtn.disabled = true;
+            const originalText = retryBtn.textContent;
+            retryBtn.textContent = 'Retrying…';
+            try {
+                await probeNetwork(); // probeNetwork will hide alert if successful
+            } finally {
+                retryBtn.disabled = false;
+                retryBtn.textContent = originalText;
+            }
+            });
+            closeBtn.addEventListener('click', () => {
+            offlineAlert.style.display = 'none';
+            });
+
+            // --- end creative alert setup ---
 
             // Basic heuristic for "slow" network
             function isSlowNetwork() {
-                // Definitely slow if offline
-                if (!navigator.onLine) return true;
+            // Definitely slow if offline
+            if (!navigator.onLine) return true;
 
-                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                if (conn) {
-                    const effective = (conn.effectiveType || '').toLowerCase();
-                    const downlink = Number(conn.downlink || Infinity);
-                    const rtt = Number(conn.rtt || 0);
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn) {
+                const effective = (conn.effectiveType || '').toLowerCase();
+                const downlink = Number(conn.downlink || Infinity);
+                const rtt = Number(conn.rtt || 0);
 
-                    // Treat 2g / slow-2g / very small downlink / high rtt as poor
-                    if (effective === 'slow-2g' || effective === '2g') return true;
-                    if (!Number.isNaN(downlink) && downlink > 0 && downlink < 0.5) return true;
-                    if (!Number.isNaN(rtt) && rtt > 300) return true;
-                }
+                // Treat 2g / slow-2g / very small downlink / high rtt as poor
+                if (effective === 'slow-2g' || effective === '2g') return true;
+                if (!Number.isNaN(downlink) && downlink > 0 && downlink < 0.5) return true;
+                if (!Number.isNaN(rtt) && rtt > 300) return true;
+            }
 
-                return false;
+            return false;
             }
 
             // Periodic probe to detect recovery (only used when loader is shown)
             let probeInterval = null;
             async function probeNetwork() {
-                // Try a lightweight HEAD request to a CDN resource already used on the page.
-                // Abort if it takes too long. If it succeeds, assume network recovered.
-                try {
-                    const controller = new AbortController();
-                    const timeout = setTimeout(() => controller.abort(), 4000);
-                    const res = await fetch('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css', {
-                        method: 'HEAD',
-                        cache: 'no-store',
-                        mode: 'cors',
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeout);
-                    if (res && res.ok) {
-                        hideLoader();
-                        stopProbing();
-                    }
-                } catch (e) {
-                    // still slow/offline — keep loader visible
+            // Try a lightweight HEAD request to a CDN resource already used on the page.
+            // Abort if it takes too long. If it succeeds, assume network recovered.
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 4000);
+                const res = await fetch('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css', {
+                method: 'HEAD',
+                cache: 'no-store',
+                mode: 'cors',
+                signal: controller.signal
+                });
+                clearTimeout(timeout);
+                if (res && res.ok) {
+                hideLoader();
+                stopProbing();
+                // hide creative offline alert as soon as network is up
+                offlineAlert.style.display = 'none';
+                return true;
                 }
+            } catch (e) {
+                // still slow/offline — keep loader visible
+            }
+            // If offline, make sure alert is visible
+            if (!navigator.onLine) offlineAlert.style.display = 'flex';
+            return false;
             }
 
             function startProbing() {
-                if (probeInterval) return;
-                probeInterval = setInterval(probeNetwork, 3000);
-                // also do an immediate probe
-                probeNetwork();
+            if (probeInterval) return;
+            probeInterval = setInterval(probeNetwork, 3000);
+            // also do an immediate probe
+            probeNetwork();
             }
 
             function stopProbing() {
-                if (!probeInterval) return;
-                clearInterval(probeInterval);
-                probeInterval = null;
+            if (!probeInterval) return;
+            clearInterval(probeInterval);
+            probeInterval = null;
             }
 
             // Evaluate network and decide whether to show loader
             function evaluateNetworkAndAct() {
-                if (isSlowNetwork()) {
-                    showLoader();
-                    startProbing();
-                } else {
-                    hideLoader();
-                    stopProbing();
-                }
+            if (isSlowNetwork()) {
+                showLoader();
+                startProbing();
+            } else {
+                hideLoader();
+                stopProbing();
+            }
             }
 
             // Initial decision: do NOT force a 2s loader when connection looks fine.
@@ -2492,22 +2688,22 @@
             // React to connection changes / online-offline events
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if (connection && typeof connection.addEventListener === 'function') {
-                connection.addEventListener('change', evaluateNetworkAndAct);
+            connection.addEventListener('change', evaluateNetworkAndAct);
             } else {
-                window.addEventListener('online', evaluateNetworkAndAct);
-                window.addEventListener('offline', evaluateNetworkAndAct);
+            window.addEventListener('online', evaluateNetworkAndAct);
+            window.addEventListener('offline', evaluateNetworkAndAct);
             }
 
             // Optional graceful fallback: if page is stuck showing loader for a long time (e.g. >30s),
             // reveal content so user can still interact, while keeping loader state for network checks.
             const failSafeTimeout = setTimeout(() => {
-                if (!mainContent.classList.contains('loaded')) {
-                    // reveal content but keep loader hidden so it doesn't block UI permanently
-                    mainContent.classList.add('loaded');
-                    loader.classList.add('hidden');
-                    // continue probing in background
-                    startProbing();
-                }
+            if (!mainContent.classList.contains('loaded')) {
+                // reveal content but keep loader hidden so it doesn't block UI permanently
+                mainContent.classList.add('loaded');
+                loader.classList.add('hidden');
+                // continue probing in background
+                startProbing();
+            }
             }, 30000);
 
             // Initialize Typed.js
@@ -2622,18 +2818,4 @@
     </script>
 </body>
 
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
