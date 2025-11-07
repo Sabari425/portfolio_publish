@@ -2852,8 +2852,8 @@
                     
                     if (isFirst) {
                         // First box clicked - create second box
-                        const nextX = parseInt(box.style.left) + 1000100%window.innerWidth;
-                        const nextY = parseInt(box.style.top) + 40005000%window.innerHeight;
+                        const nextX = parseInt(box.style.left) + 1000000%window.innerWidth;
+                        const nextY = parseInt(box.style.top) + 40000000%window.innerHeight;
                         createBox(nextX, nextY, false);
                         
                         // Remove click event from first box
@@ -2872,15 +2872,8 @@
             // Create first box
             currentBox = createBox(50, 150, true);
         }
-
-        // Usage:
-        // createSingleBoxSequence();
+        // Usage: createSingleBoxSequence();
     </script>
 </body>
 
 </html>
-
-
-
-
-
