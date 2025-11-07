@@ -1977,6 +1977,23 @@
                 stroke-dashoffset: 75;
             }
         }
+
+        /* animation for home page name glow  */
+        .glowing-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 2px var(--box-bg-color),
+                            0 0 5px var(--box-bg-color),
+                            0 0 85px var(--box-bg-color);
+            animation: textGlow 2s infinite alternate;
+        }
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 10px var(--primary-color); }
+            100% { text-shadow: 0 0 20px var(--primary-color), 0 0 40px var(--primary-color); }
+        }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
     <script src="https://unpkg.com/typed.js@2.0.15/dist/typed.umd.js"></script>
@@ -2039,7 +2056,7 @@
         <section class="home" id="home">
             <div class="home-content">
                 <h3>Hello, It's Me</h3>
-                <h1>Sabari Poornesh S</h1>
+                <h1 class="glow-text">Sabari Poornesh S</h1>
                 <h3>And I'm a <span class="text"></span></h3>
                 <p>I'm a passionate web developer and UI/UX designer, dedicated to creating seamless and visually
                     appealing
@@ -2822,4 +2839,5 @@
 </body>
 
 </html>
+
 
